@@ -24,7 +24,7 @@ export default function LoginMock() {
       // Cookieを設定（サーバーサイドでも認証状態を確認できるように）
       document.cookie = "mockAuthToken=mock-token; path=/; max-age=86400"; // 24時間有効
       navigate("/");
-    } catch (err) {
+    } catch (_err) {
       setError("ログインに失敗しました");
     }
   };
@@ -38,7 +38,7 @@ export default function LoginMock() {
             AWS環境なしで開発を進めるためのモックログインです
           </p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
@@ -52,7 +52,7 @@ export default function LoginMock() {
               placeholder="dev@example.com"
             />
           </div>
-          
+
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium">
               パスワード（任意）
@@ -65,16 +65,14 @@ export default function LoginMock() {
               placeholder="任意のパスワード"
             />
           </div>
-          
-          {error && (
-            <p className="text-sm text-red-500">{error}</p>
-          )}
-          
+
+          {error && <p className="text-sm text-red-500">{error}</p>}
+
           <Button type="submit" className="w-full">
             ログイン
           </Button>
         </form>
-        
+
         <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
           <p className="text-xs text-yellow-800">
             <strong>開発モード:</strong> 任意の認証情報でログインできます。

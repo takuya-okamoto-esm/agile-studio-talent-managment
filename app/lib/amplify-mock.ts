@@ -30,8 +30,8 @@ export const mockAuth = {
     }
     throw new Error("Mock auth not enabled");
   },
-  
-  signIn: async (credentials: { username: string; password: string }) => {
+
+  signIn: async (_credentials: { username: string; password: string }) => {
     if (import.meta.env.VITE_USE_MOCK_AUTH === "true") {
       // Accept any credentials in mock mode
       localStorage.setItem("mockAuthToken", "mock-token");
@@ -42,7 +42,7 @@ export const mockAuth = {
     }
     throw new Error("Mock auth not enabled");
   },
-  
+
   signOut: async () => {
     if (import.meta.env.VITE_USE_MOCK_AUTH === "true") {
       localStorage.removeItem("mockAuthToken");
