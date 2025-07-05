@@ -11,6 +11,11 @@ export function meta() {
 }
 
 export async function clientLoader() {
+  // Use mock login in development mode
+  if (import.meta.env.VITE_USE_MOCK_AUTH === "true") {
+    return redirect("/login-mock");
+  }
+  
   try {
     const user = await getCurrentUser();
     if (user) {

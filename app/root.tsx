@@ -17,7 +17,10 @@ import { useEffect } from "react";
 import { ToasterProvider } from "~/components/toaster-provider";
 import config from "../amplify_outputs.json";
 
-Amplify.configure(config, { ssr: true });
+// Configure Amplify based on environment
+if (import.meta.env.VITE_USE_MOCK_AUTH !== "true") {
+  Amplify.configure(config, { ssr: true });
+}
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -42,12 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <Authenticator.Provider>
-          <ThemeProvider>
-            {children}
-            <ToasterProvider />
-          </ThemeProvider>
-        </Authenticator.Provider>
+        {children}
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -65,7 +63,15 @@ export default function App() {
       }
     });
   }, []);
-  return <Outlet />;
+  
+  return (
+    <Authenticator.Provider>
+      <ThemeProvider>
+        <Outlet />
+        <ToasterProvider />
+      </ThemeProvider>
+    </Authenticator.Provider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
