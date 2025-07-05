@@ -1,0 +1,10 @@
+#!/bin/bash
+# プロジェクト固有の環境設定
+
+# Node.js v20を使用
+if command -v nvm &> /dev/null; then
+    nvm use 20 2>/dev/null || echo "Node.js v20が見つかりません。'nvm install 20'を実行してください。"
+fi
+
+echo "🚀 Node.js $(node --version) を使用しています"
+echo "📁 Agile Studio Talent Management プロジェクト環境を読み込みました"
