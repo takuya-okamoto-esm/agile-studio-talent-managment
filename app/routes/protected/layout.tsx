@@ -11,11 +11,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     // Cookieからモック認証トークンを確認
     const cookie = request.headers.get("Cookie");
     const mockAuthToken = cookie?.includes("mockAuthToken=mock-token");
-    
+
     if (!mockAuthToken) {
       return redirect("/login");
     }
-    
+
     // モックユーザー情報を返す
     const mockAccount = {
       id: "mock-account-123",
@@ -27,7 +27,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    
+
     return data({
       account: mockAccount,
       error: null,

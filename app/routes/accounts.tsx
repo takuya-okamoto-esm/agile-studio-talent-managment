@@ -107,6 +107,46 @@ export async function action({ request }: { request: Request }) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  // モック認証モードの場合
+  if (import.meta.env.VITE_USE_MOCK_AUTH === "true") {
+    // モックアカウントデータを返す
+    const mockAccounts = [
+      {
+        id: "mock-account-1",
+        name: "山田太郎",
+        email: "yamada@example.com",
+        photo: null,
+        organizationLine: "開発部 / エンジニアリング課",
+        residence: "東京都",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: "mock-account-2",
+        name: "佐藤花子",
+        email: "sato@example.com",
+        photo: null,
+        organizationLine: "デザイン部 / UI/UX課",
+        residence: "大阪府",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: "mock-account-3",
+        name: "田中一郎",
+        email: "tanaka@example.com",
+        photo: null,
+        organizationLine: "営業部 / 企画課",
+        residence: "愛知県",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+
+    return { accounts: mockAccounts };
+  }
+
+  // 本番モード（Amplify認証）
   const responseHeaders = new Headers();
   return runWithAmplifyServerContext({
     serverContext: { request, responseHeaders },

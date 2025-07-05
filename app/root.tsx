@@ -63,7 +63,7 @@ export default function App() {
       }
     });
   }, []);
-  
+
   return (
     <Authenticator.Provider>
       <ThemeProvider>

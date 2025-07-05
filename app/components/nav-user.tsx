@@ -32,7 +32,7 @@ export function NavUser({
   const navigate = useNavigate();
   const handleLogout = async () => {
     console.log("Logging out...");
-    
+
     // モック認証モードの場合
     if (import.meta.env.VITE_USE_MOCK_AUTH === "true") {
       await mockAuth.signOut();
@@ -42,7 +42,7 @@ export function NavUser({
       // 本番モード
       await signOut();
     }
-    
+
     navigate("/login");
   };
 

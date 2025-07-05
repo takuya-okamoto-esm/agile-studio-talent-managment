@@ -3,12 +3,14 @@
 ## 1. API概要
 
 ### 1.1 API仕様
+
 - **プロトコル**: GraphQL over HTTPS
 - **エンドポイント**: AWS Amplify Gen2 Managed GraphQL API
 - **認証**: AWS Cognito JWT Token
 - **データ形式**: JSON
 
 ### 1.2 設計原則
+
 - **Type Safety**: TypeScript完全対応
 - **Efficient Queries**: 必要なデータのみ取得
 - **Consistent Naming**: 統一された命名規則
@@ -20,12 +22,17 @@
 ### 2.1 Type定義
 
 #### 2.1.1 Account型
+
 ```graphql
-type Account @model @auth(rules: [
-  { allow: public, operations: [read] },
-  { allow: owner, operations: [create, update, delete] },
-  { allow: groups, groups: ["Admin"] }
-]) {
+type Account
+  @model
+  @auth(
+    rules: [
+      { allow: public, operations: [read] }
+      { allow: owner, operations: [create, update, delete] }
+      { allow: groups, groups: ["Admin"] }
+    ]
+  ) {
   id: ID!
   name: String!
   email: AWSEmail! @index(name: "byEmail")
@@ -40,44 +47,56 @@ type Account @model @auth(rules: [
 ```
 
 #### 2.1.2 Project型
+
 ```graphql
-type Project @model @auth(rules: [
-  { allow: public, operations: [read] },
-  { allow: groups, groups: ["Admin"], operations: [create, update, delete] }
-]) {
+type Project
+  @model
+  @auth(
+    rules: [
+      { allow: public, operations: [read] }
+      { allow: groups, groups: ["Admin"], operations: [create, update, delete] }
+    ]
+  ) {
   id: ID!
   name: String!
   clientName: String!
   overview: String!
   startDate: AWSDate!
   endDate: AWSDate
-  assignments: [ProjectAssignment] @hasMany(indexName: "byProject", fields: ["id"])
-  technologies: [ProjectTechnologyLink] @hasMany(indexName: "byProject", fields: ["id"])
+  assignments: [ProjectAssignment]
+    @hasMany(indexName: "byProject", fields: ["id"])
+  technologies: [ProjectTechnologyLink]
+    @hasMany(indexName: "byProject", fields: ["id"])
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
 ```
 
 #### 2.1.3 ProjectTechnology型
+
 ```graphql
-type ProjectTechnology @model @auth(rules: [
-  { allow: public }
-]) {
+type ProjectTechnology @model @auth(rules: [{ allow: public }]) {
   id: ID!
   name: String!
   description: String
-  projects: [ProjectTechnologyLink] @hasMany(indexName: "byTechnology", fields: ["id"])
+  projects: [ProjectTechnologyLink]
+    @hasMany(indexName: "byTechnology", fields: ["id"])
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
 ```
 
 #### 2.1.4 ProjectAssignment型
+
 ```graphql
-type ProjectAssignment @model @auth(rules: [
-  { allow: public, operations: [read] },
-  { allow: groups, groups: ["Admin"], operations: [create, update, delete] }
-]) {
+type ProjectAssignment
+  @model
+  @auth(
+    rules: [
+      { allow: public, operations: [read] }
+      { allow: groups, groups: ["Admin"], operations: [create, update, delete] }
+    ]
+  ) {
   id: ID!
   projectId: ID! @index(name: "byProject")
   accountId: ID! @index(name: "byAccount")
@@ -91,11 +110,16 @@ type ProjectAssignment @model @auth(rules: [
 ```
 
 #### 2.1.5 ProjectTechnologyLink型
+
 ```graphql
-type ProjectTechnologyLink @model @auth(rules: [
-  { allow: public, operations: [read] },
-  { allow: groups, groups: ["Admin"], operations: [create, update, delete] }
-]) {
+type ProjectTechnologyLink
+  @model
+  @auth(
+    rules: [
+      { allow: public, operations: [read] }
+      { allow: groups, groups: ["Admin"], operations: [create, update, delete] }
+    ]
+  ) {
   id: ID!
   projectId: ID! @index(name: "byProject")
   technologyId: ID! @index(name: "byTechnology")
@@ -109,6 +133,7 @@ type ProjectTechnologyLink @model @auth(rules: [
 ### 2.2 Query操作
 
 #### 2.2.1 単一レコード取得
+
 ```graphql
 # Account取得
 query GetAccount($id: ID!) {
@@ -167,6 +192,7 @@ query GetProject($id: ID!) {
 ```
 
 #### 2.2.2 リスト取得
+
 ```graphql
 # 全Account取得
 query ListAccounts(
@@ -214,7 +240,11 @@ query ListProjectTechnologies(
   $limit: Int
   $nextToken: String
 ) {
-  listProjectTechnologies(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listProjectTechnologies(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
     items {
       id
       name
@@ -237,6 +267,7 @@ query ListProjectTechnologies(
 ### 2.3 Mutation操作
 
 #### 2.3.1 作成操作
+
 ```graphql
 # Account作成
 mutation CreateAccount($input: CreateAccountInput!) {
@@ -287,6 +318,7 @@ mutation CreateProjectAssignment($input: CreateProjectAssignmentInput!) {
 ```
 
 #### 2.3.2 更新操作
+
 ```graphql
 # Account更新
 mutation UpdateAccount($input: UpdateAccountInput!) {
@@ -316,6 +348,7 @@ mutation UpdateProject($input: UpdateProjectInput!) {
 ```
 
 #### 2.3.3 削除操作
+
 ```graphql
 # Account削除
 mutation DeleteAccount($input: DeleteAccountInput!) {
@@ -338,6 +371,7 @@ mutation DeleteProject($input: DeleteProjectInput!) {
 ## 3. TypeScript型定義
 
 ### 3.1 生成型
+
 ```typescript
 // amplify/data/resource.tsから自動生成
 import type { Schema } from "../../amplify/data/resource";
@@ -357,6 +391,7 @@ export type UpdateProjectInput = Schema["Project"]["updateType"];
 ```
 
 ### 3.2 カスタム型
+
 ```typescript
 // フォーム用型定義
 export interface AccountFormData {
@@ -380,7 +415,7 @@ export interface ProjectFormData {
 export interface AccountWithProjects extends Account {
   projects: {
     items: (ProjectAssignment & {
-      project: Pick<Project, 'name' | 'clientName'>;
+      project: Pick<Project, "name" | "clientName">;
     })[];
   };
 }
@@ -388,12 +423,12 @@ export interface AccountWithProjects extends Account {
 export interface ProjectWithDetails extends Project {
   assignments: {
     items: (ProjectAssignment & {
-      account: Pick<Account, 'name' | 'email'>;
+      account: Pick<Account, "name" | "email">;
     })[];
   };
   technologies: {
     items: (ProjectTechnologyLink & {
-      technology: Pick<ProjectTechnology, 'name' | 'description'>;
+      technology: Pick<ProjectTechnology, "name" | "description">;
     })[];
   };
 }
@@ -402,6 +437,7 @@ export interface ProjectWithDetails extends Project {
 ## 4. API クライアント実装
 
 ### 4.1 クライアント設定
+
 ```typescript
 // app/lib/amplify-client.ts
 import { Amplify } from "aws-amplify";
@@ -419,6 +455,7 @@ export const client = generateClient<Schema>({
 ### 4.2 CRUD操作の実装
 
 #### 4.2.1 Account操作
+
 ```typescript
 // Account関連のAPI呼び出し
 export class AccountService {
@@ -434,11 +471,19 @@ export class AccountService {
       { id },
       {
         selectionSet: [
-          'id', 'name', 'email', 'photo', 'organizationLine', 'residence',
-          'projects.id', 'projects.startDate', 'projects.endDate',
-          'projects.project.name', 'projects.project.clientName'
-        ]
-      }
+          "id",
+          "name",
+          "email",
+          "photo",
+          "organizationLine",
+          "residence",
+          "projects.id",
+          "projects.startDate",
+          "projects.endDate",
+          "projects.project.name",
+          "projects.project.clientName",
+        ],
+      },
     );
     return response.data;
   }
@@ -473,6 +518,7 @@ export class AccountService {
 ```
 
 #### 4.2.2 Project操作
+
 ```typescript
 export class ProjectService {
   static async listAll() {
@@ -485,12 +531,22 @@ export class ProjectService {
       { id },
       {
         selectionSet: [
-          'id', 'name', 'clientName', 'overview', 'startDate', 'endDate',
-          'assignments.id', 'assignments.startDate', 'assignments.endDate',
-          'assignments.account.name', 'assignments.account.email',
-          'technologies.id', 'technologies.technology.name', 'technologies.technology.description'
-        ]
-      }
+          "id",
+          "name",
+          "clientName",
+          "overview",
+          "startDate",
+          "endDate",
+          "assignments.id",
+          "assignments.startDate",
+          "assignments.endDate",
+          "assignments.account.name",
+          "assignments.account.email",
+          "technologies.id",
+          "technologies.technology.name",
+          "technologies.technology.description",
+        ],
+      },
     );
     return response.data;
   }
@@ -516,6 +572,7 @@ export class ProjectService {
 ## 5. エラーハンドリング
 
 ### 5.1 エラー型定義
+
 ```typescript
 // GraphQLErrors
 interface GraphQLError {
@@ -532,46 +589,50 @@ export class APIError extends Error {
   constructor(
     message: string,
     public code: string,
-    public field?: string
+    public field?: string,
   ) {
     super(message);
-    this.name = 'APIError';
+    this.name = "APIError";
   }
 }
 
 export class ValidationError extends APIError {
   constructor(message: string, field: string) {
-    super(message, 'VALIDATION_ERROR', field);
-    this.name = 'ValidationError';
+    super(message, "VALIDATION_ERROR", field);
+    this.name = "ValidationError";
   }
 }
 
 export class AuthorizationError extends APIError {
-  constructor(message: string = 'アクセス権限がありません') {
-    super(message, 'AUTHORIZATION_ERROR');
-    this.name = 'AuthorizationError';
+  constructor(message: string = "アクセス権限がありません") {
+    super(message, "AUTHORIZATION_ERROR");
+    this.name = "AuthorizationError";
   }
 }
 ```
 
 ### 5.2 エラーハンドリング実装
+
 ```typescript
 // 共通エラーハンドラー
 export function handleAPIError(errors: GraphQLError[]): never {
   const error = errors[0];
-  
+
   switch (error.extensions?.code) {
-    case 'UNAUTHORIZED':
+    case "UNAUTHORIZED":
       throw new AuthorizationError(error.message);
-    
-    case 'VALIDATION_ERROR':
+
+    case "VALIDATION_ERROR":
       throw new ValidationError(
         error.message,
-        error.extensions?.fieldName || 'unknown'
+        error.extensions?.fieldName || "unknown",
       );
-    
+
     default:
-      throw new APIError(error.message, error.extensions?.code || 'UNKNOWN_ERROR');
+      throw new APIError(
+        error.message,
+        error.extensions?.code || "UNKNOWN_ERROR",
+      );
   }
 }
 
@@ -579,11 +640,11 @@ export function handleAPIError(errors: GraphQLError[]): never {
 export class AccountService {
   static async create(input: CreateAccountInput) {
     const response = await client.models.Account.create(input);
-    
+
     if (response.errors) {
       handleAPIError(response.errors);
     }
-    
+
     return response.data!;
   }
 }
@@ -592,6 +653,7 @@ export class AccountService {
 ## 6. React Router統合
 
 ### 6.1 Loader実装
+
 ```typescript
 // app/routes/protected/accounts/_index.tsx
 import type { LoaderFunctionArgs } from "react-router";
@@ -609,7 +671,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function AccountsIndex() {
   const { accounts } = useLoaderData<typeof loader>();
-  
+
   return (
     <div>
       {accounts.map((account) => (
@@ -623,6 +685,7 @@ export default function AccountsIndex() {
 ```
 
 ### 6.2 Action実装
+
 ```typescript
 // app/routes/protected/accounts/new.tsx
 import type { ActionFunctionArgs } from "react-router";
@@ -631,21 +694,21 @@ import { AccountService } from "~/lib/services/account-service";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  
+
   const accountData = {
     name: formData.get("name") as string,
     email: formData.get("email") as string,
     organizationLine: formData.get("organizationLine") as string,
     residence: formData.get("residence") as string,
-    photo: formData.get("photo") as string || undefined,
+    photo: (formData.get("photo") as string) || undefined,
   };
 
   try {
     await AccountService.create(accountData);
     return redirect("/accounts");
   } catch (error) {
-    console.error('アカウント作成に失敗しました:', error);
-    return { error: 'アカウント作成に失敗しました' };
+    console.error("アカウント作成に失敗しました:", error);
+    return { error: "アカウント作成に失敗しました" };
   }
 }
 ```
@@ -653,6 +716,7 @@ export async function action({ request }: ActionFunctionArgs) {
 ## 7. 認証・認可
 
 ### 7.1 認証ヘッダー
+
 ```typescript
 // JWT Token自動付与
 const client = generateClient<Schema>({
@@ -665,23 +729,24 @@ const clientWithCustomHeaders = generateClient<Schema>({
   headers: async () => {
     const session = await fetchAuthSession();
     return {
-      'Custom-Header': 'value',
-      'Authorization': `Bearer ${session.tokens.accessToken}`
+      "Custom-Header": "value",
+      Authorization: `Bearer ${session.tokens.accessToken}`,
     };
-  }
+  },
 });
 ```
 
 ### 7.2 権限チェック
+
 ```typescript
 // フロントエンド権限チェック
 export function usePermissions() {
   const { user } = useAuthenticator();
-  
+
   const isAdmin = user?.signInDetails?.loginId?.includes('admin') || false;
   const canManageProjects = isAdmin;
   const canManageAccounts = isAdmin;
-  
+
   return {
     isAdmin,
     canManageProjects,
@@ -693,11 +758,11 @@ export function usePermissions() {
 // 使用例
 export default function ProjectActions({ projectId }: { projectId: string }) {
   const { canManageProjects } = usePermissions();
-  
+
   if (!canManageProjects) {
     return null;
   }
-  
+
   return (
     <div>
       <button>編集</button>
@@ -710,10 +775,11 @@ export default function ProjectActions({ projectId }: { projectId: string }) {
 ## 8. パフォーマンス最適化
 
 ### 8.1 効率的なクエリ
+
 ```typescript
 // 必要なフィールドのみ取得
 const efficientQuery = await client.models.Account.list({
-  selectionSet: ['id', 'name', 'email'] // 必要最小限のフィールド
+  selectionSet: ["id", "name", "email"], // 必要最小限のフィールド
 });
 
 // 関連データも一度に取得
@@ -721,29 +787,35 @@ const accountWithProjects = await client.models.Account.get(
   { id: accountId },
   {
     selectionSet: [
-      'id', 'name', 'email',
-      'projects.id', 'projects.startDate', 'projects.endDate',
-      'projects.project.name'
-    ]
-  }
+      "id",
+      "name",
+      "email",
+      "projects.id",
+      "projects.startDate",
+      "projects.endDate",
+      "projects.project.name",
+    ],
+  },
 );
 ```
 
 ### 8.2 並列処理
+
 ```typescript
 // 複数API呼び出しの並列実行
 export async function loadDashboardData() {
   const [accounts, projects, technologies] = await Promise.all([
     AccountService.listAll(),
     ProjectService.listAll(),
-    ProjectTechnologyService.listAll()
+    ProjectTechnologyService.listAll(),
   ]);
-  
+
   return { accounts, projects, technologies };
 }
 ```
 
 ### 8.3 キャッシュ戦略
+
 ```typescript
 // React Router Cache
 export function shouldRevalidate({ formMethod }: ShouldRevalidateFunctionArgs) {
@@ -753,9 +825,9 @@ export function shouldRevalidate({ formMethod }: ShouldRevalidateFunctionArgs) {
 
 // メモ化
 const memoizedAccountData = useMemo(() => {
-  return accounts.map(account => ({
+  return accounts.map((account) => ({
     ...account,
-    projectCount: account.projects?.items?.length || 0
+    projectCount: account.projects?.items?.length || 0,
   }));
 }, [accounts]);
 ```
@@ -763,22 +835,23 @@ const memoizedAccountData = useMemo(() => {
 ## 9. テスト設計
 
 ### 9.1 APIテスト
+
 ```typescript
 // Vitest + MSW でのAPIテスト
-import { describe, it, expect, beforeAll } from 'vitest';
-import { AccountService } from '~/lib/services/account-service';
+import { describe, it, expect, beforeAll } from "vitest";
+import { AccountService } from "~/lib/services/account-service";
 
-describe('AccountService', () => {
+describe("AccountService", () => {
   beforeAll(() => {
     // Mock Amplify client
   });
 
-  it('should create account successfully', async () => {
+  it("should create account successfully", async () => {
     const accountData = {
-      name: 'テストユーザー',
-      email: 'test@example.com',
-      organizationLine: 'テスト部署',
-      residence: 'テスト地域'
+      name: "テストユーザー",
+      email: "test@example.com",
+      organizationLine: "テスト部署",
+      residence: "テスト地域",
     };
 
     const result = await AccountService.create(accountData);
@@ -788,17 +861,17 @@ describe('AccountService', () => {
     expect(result.email).toBe(accountData.email);
   });
 
-  it('should handle validation errors', async () => {
+  it("should handle validation errors", async () => {
     const invalidData = {
-      name: '', // 必須フィールドが空
-      email: 'invalid-email',
-      organizationLine: 'テスト部署',
-      residence: 'テスト地域'
+      name: "", // 必須フィールドが空
+      email: "invalid-email",
+      organizationLine: "テスト部署",
+      residence: "テスト地域",
     };
 
-    await expect(AccountService.create(invalidData))
-      .rejects
-      .toThrow(ValidationError);
+    await expect(AccountService.create(invalidData)).rejects.toThrow(
+      ValidationError,
+    );
   });
 });
 ```
@@ -806,6 +879,7 @@ describe('AccountService', () => {
 ## 10. 今後の拡張予定
 
 ### 10.1 機能拡張
+
 ```graphql
 # スキル評価機能
 type SkillAssessment @model {
@@ -838,6 +912,7 @@ enum NotificationType {
 ```
 
 ### 10.2 技術拡張
+
 - **GraphQL Subscription**: リアルタイム更新
 - **Batch API**: 大量データ処理
 - **File Upload**: S3統合によるファイルアップロード

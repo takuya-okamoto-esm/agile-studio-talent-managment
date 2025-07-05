@@ -12,6 +12,86 @@ export function meta() {
 }
 
 export async function loader({ params, request }: Route.LoaderArgs) {
+  // モック認証モードの場合
+  if (import.meta.env.VITE_USE_MOCK_AUTH === "true") {
+    const accountId = params.accountId;
+
+    // モックアカウントデータ
+    const mockAccounts = {
+      "mock-account-1": {
+        id: "mock-account-1",
+        name: "山田太郎",
+        email: "yamada@example.com",
+        photo: null,
+        organizationLine: "開発部 / エンジニアリング課",
+        residence: "東京都",
+        assignments: [
+          {
+            id: "assignment-1",
+            projectId: "project-1",
+            startDate: "2024-01-01",
+            endDate: "2024-06-30",
+            project: {
+              id: "project-1",
+              name: "ECサイトリニューアル",
+              clientName: "株式会社ABC",
+            },
+          },
+          {
+            id: "assignment-2",
+            projectId: "project-2",
+            startDate: "2024-07-01",
+            endDate: null,
+            project: {
+              id: "project-2",
+              name: "モバイルアプリ開発",
+              clientName: "株式会社XYZ",
+            },
+          },
+        ],
+      },
+      "mock-account-2": {
+        id: "mock-account-2",
+        name: "佐藤花子",
+        email: "sato@example.com",
+        photo: null,
+        organizationLine: "デザイン部 / UI/UX課",
+        residence: "大阪府",
+        assignments: [
+          {
+            id: "assignment-3",
+            projectId: "project-3",
+            startDate: "2024-03-01",
+            endDate: "2024-08-31",
+            project: {
+              id: "project-3",
+              name: "ブランドリニューアル",
+              clientName: "株式会社DEF",
+            },
+          },
+        ],
+      },
+      "mock-account-3": {
+        id: "mock-account-3",
+        name: "田中一郎",
+        email: "tanaka@example.com",
+        photo: null,
+        organizationLine: "営業部 / 企画課",
+        residence: "愛知県",
+        assignments: [],
+      },
+    };
+
+    const account = mockAccounts[accountId as keyof typeof mockAccounts];
+
+    if (!account) {
+      throw data({ error: "Account not found" }, { status: 404 });
+    }
+
+    return data({ account });
+  }
+
+  // 本番モード（Amplify認証）
   const responseHeaders = new Headers();
   return runWithAmplifyServerContext({
     serverContext: { request, responseHeaders },

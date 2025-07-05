@@ -11,18 +11,21 @@ Agile Studio のメンバーのスキルや経験、プロジェクトアサイ�
 ## 開発環境セットアップ
 
 ### 必要なバージョン
+
 - **Node.js**: v20.x以上（React Router v7要件）
 - **npm**: v10.x以上
 
 ### Node.js環境切り替え
 
 #### 方法1: 自動設定スクリプト使用
+
 ```bash
 # プロジェクトディレクトリで実行
 source .autorc
 ```
 
 #### 方法2: nvm使用（推奨）
+
 ```bash
 # Node.js v20をインストール（未インストールの場合）
 nvm install 20

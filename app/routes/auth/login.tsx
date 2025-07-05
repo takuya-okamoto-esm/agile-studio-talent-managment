@@ -15,7 +15,7 @@ export async function clientLoader() {
   if (import.meta.env.VITE_USE_MOCK_AUTH === "true") {
     return redirect("/login-mock");
   }
-  
+
   try {
     const user = await getCurrentUser();
     if (user) {
