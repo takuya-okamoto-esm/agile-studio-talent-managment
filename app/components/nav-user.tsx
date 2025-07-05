@@ -17,6 +17,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar";
+import { mockAuth } from "~/lib/amplify-mock";
 export function NavUser({
   user,
 }: {
@@ -31,7 +32,17 @@ export function NavUser({
   const navigate = useNavigate();
   const handleLogout = async () => {
     console.log("Logging out...");
-    await signOut();
+    
+    // モック認証モードの場合
+    if (import.meta.env.VITE_USE_MOCK_AUTH === "true") {
+      await mockAuth.signOut();
+      // Cookieも削除
+      document.cookie = "mockAuthToken=; path=/; max-age=0";
+    } else {
+      // 本番モード
+      await signOut();
+    }
+    
     navigate("/login");
   };
 
