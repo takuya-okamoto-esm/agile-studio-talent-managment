@@ -10,3 +10,7 @@
 amplify_outputs*
 amplifyconfiguration*
 .amplify-hosting/
+amplify_outputs.json
+# .envファイルを.gitignoreに追加
+.env.development
+.env.local
